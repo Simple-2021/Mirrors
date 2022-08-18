@@ -3,6 +3,6 @@
 ## Docker Url
 > https://hub.docker.com/repository/docker/bitmirrors/mirrors
 ## MLatest
-### docker pull bitmirrors/mirrors:0.0.3
+> docker pull bitmirrors/mirrors:0.0.3
 
 <hr/>
