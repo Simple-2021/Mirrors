@@ -21,4 +21,5 @@ class AppSupportConfiguration : WebMvcConfigurationSupport() {
         registry.viewResolver(inter)
         super.configureViewResolvers(registry)
     }
+
 }

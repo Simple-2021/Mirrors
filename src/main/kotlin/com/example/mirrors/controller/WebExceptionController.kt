@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServletResponse
 @RequestMapping("\${server.error.path:\${error.path:/error}}")
 class WebExceptionController(errorAttributes: ErrorAttributes, errorProperties: ErrorProperties) :
     BasicErrorController(errorAttributes, errorProperties) {
+
     override fun errorHtml(request: HttpServletRequest, response: HttpServletResponse): ModelAndView {
         response.status = 200
         return ModelAndView("application")
     }
+
 }

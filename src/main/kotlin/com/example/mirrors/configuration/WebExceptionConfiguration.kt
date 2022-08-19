@@ -19,5 +19,4 @@ class WebExceptionConfiguration {
         return ErrorProperties()
     }
 
-
 }
