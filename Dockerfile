@@ -13,5 +13,5 @@ ADD target/${JAR_FILE} app.jar
 #ARG Port
 ARG Port
 EXPOSE ${Port}
-#COMMAND
+#JAVA Jar
 ENTRYPOINT ["java","-jar","app.jar"]
