@@ -12,22 +12,22 @@ class AppDataController {
 
 
     @Resource(name = "data")
-    private val array: LinkedList<String>? = null
+    private lateinit var array: LinkedList<String>
 
     @PostMapping("/")
     fun getIndex(): Long {
-        return array!!.size.toLong()
+        return array.size.toLong()
     }
 
     @GetMapping("/api")
-    fun get(): String? {
-        return array!!.last
+    fun get(): String {
+        return array.last
     }
 
     @PostMapping("/api")
     fun post(content: String, response: HttpServletResponse) {
-        if (content.length > 0) {
-            array!!.add(content)
+        if (content.isNotEmpty()) {
+            array.add(content)
             response.status = 200
         } else {
             response.status = 400

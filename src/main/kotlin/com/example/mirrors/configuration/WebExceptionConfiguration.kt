@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Configuration
 class WebExceptionConfiguration {
 
     @Bean
-    fun errorAttributes(): ErrorAttributes? {
+    fun errorAttributes(): ErrorAttributes {
         return DefaultErrorAttributes()
     }
 
     @Bean
-    fun errorProperties(): ErrorProperties? {
+    fun errorProperties(): ErrorProperties {
         return ErrorProperties()
     }
 

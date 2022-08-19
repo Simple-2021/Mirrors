@@ -8,8 +8,8 @@ import java.util.*
 class AppConfiguration {
 
     @Bean(name = ["data"])
-    fun getData(): LinkedList<String?>? {
-        return object : LinkedList<String?>() {
+    fun getData(): LinkedList<String> {
+        return object : LinkedList<String>() {
             init {
                 add("Unit")
             }
