@@ -10,28 +10,22 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 class AppDataController {
 
-
-    @Resource(name = "data")
-    private lateinit var array: LinkedList<String>
+    @Resource(name = "mirrors")
+    private lateinit var mirrors: LinkedList<String>
 
     @PostMapping("/")
-    fun getIndex(): Long {
-        return array.size.toLong()
+    fun getCount(): Long {
+        return mirrors.size.toLong()
     }
 
     @GetMapping("/api")
-    fun get(): String {
-        return array.last
+    fun getMirror(): String {
+        return mirrors.last
     }
 
     @PostMapping("/api")
-    fun post(content: String, response: HttpServletResponse) {
-        if (content.isNotEmpty()) {
-            array.add(content)
-            response.status = 200
-        } else {
-            response.status = 400
-        }
+    fun postMirror(content: String, response: HttpServletResponse) {
+        if (content.isNotEmpty()) mirrors.add(content) else response.status = 400
     }
 
 }

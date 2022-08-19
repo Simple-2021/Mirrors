@@ -7,7 +7,7 @@ import java.util.*
 @Configuration
 class AppConfiguration {
 
-    @Bean(name = ["data"])
+    @Bean(name = ["mirrors"])
     fun getData(): LinkedList<String> {
         return object : LinkedList<String>() {
             init {

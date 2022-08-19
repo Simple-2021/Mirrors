@@ -10,4 +10,5 @@ class AppController {
     fun index(): String {
         return "application"
     }
+
 }
