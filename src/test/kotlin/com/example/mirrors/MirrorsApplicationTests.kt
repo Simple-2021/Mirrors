@@ -8,7 +8,7 @@ class MirrorsApplicationTests {
 
     @Test
     fun indexTest() {
-        println("dotest")
+        println("Kotlin BootApplication")
     }
 
 }
