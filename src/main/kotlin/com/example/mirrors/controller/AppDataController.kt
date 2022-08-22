@@ -32,7 +32,7 @@ class AppDataController {
     fun postMirror(mirror: String, response: HttpServletResponse) {
         synchronized(this) {
             if (mirror.isNotEmpty()) {
-                mirrors.add(mirror)
+                mirrors.add(mirror.trim())
             } else {
                 response.status = 400
             }
