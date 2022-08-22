@@ -9,9 +9,9 @@ ARG Descript
 LABEL description=${Descript}
 #ARG JAR
 ARG JAR_FILE
-ADD target/${JAR_FILE} app.jar
+ADD target/${JAR_FILE} /home/apps/app.jar
 #ARG Port
 ARG Port
 EXPOSE ${Port}
 #COMMAND
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java","-jar","/home/apps/app.jar"]

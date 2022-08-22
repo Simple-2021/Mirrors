@@ -8,7 +8,7 @@ import java.util.*
 class AppConfiguration {
 
     @Bean(name = ["mirrors"])
-    fun getData(): LinkedList<String> {
+    fun getMirrors(): LinkedList<String> {
         return object : LinkedList<String>() {
             init {
                 add("Unit")
