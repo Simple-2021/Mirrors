@@ -7,6 +7,7 @@ import java.util.*
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletResponse
 
+
 @RestController
 class AppDataController {
 
@@ -19,13 +20,23 @@ class AppDataController {
     }
 
     @GetMapping("/api")
-    fun getMirror(): String {
-        return mirrors.last
+    fun getMirror(): HashMap<String, String> {
+        return object : HashMap<String, String>() {
+            init {
+                put("mirror", mirrors.last)
+            }
+        }
     }
 
     @PostMapping("/api")
-    fun postMirror(content: String, response: HttpServletResponse) {
-        synchronized(this) { if (content.isNotEmpty()) mirrors.add(content) else response.status = 400 }
+    fun postMirror(mirror: String, response: HttpServletResponse) {
+        synchronized(this) {
+            if (mirror.isNotEmpty()) {
+                mirrors.add(mirror)
+            } else {
+                response.status = 400
+            }
+        }
     }
 
 }

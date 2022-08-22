@@ -77,7 +77,7 @@
                 <version>1.4.13</version>
                 <executions>
                     <execution>
-                        <id>dep</id>
+                        <id>deploy</id>
                         <goals>
                             <goal>build</goal>
                             <goal>push</goal>

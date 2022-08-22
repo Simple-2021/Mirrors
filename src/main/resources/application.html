@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 
 <head>
     <meta charset="UTF-8">
@@ -100,9 +100,9 @@
 </head>
 
 <body class="center">
-<form action="/" autocomplete="off" id="table" method="post">
+<form id="table" method="post" autocomplete="off">
     <!--suppress HtmlFormInputWithoutLabel -->
-    <input autofocus="autofocus" class="center" id="Unit" name="content" placeholder="Unit" type="text">
+    <input id="Unit" type="text" name="content" class="center" placeholder="Unit" autofocus="autofocus">
 </form>
 <script>
     const unit = document.getElementById("Unit");
@@ -118,7 +118,8 @@
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                unit.attributes.getNamedItem("placeholder").value = xhr.responseText;
+
+                unit.attributes.getNamedItem("placeholder").value = JSON.parse(xhr.responseText).mirror;
             }
         }
         xhr.open("get", "/api", true);
@@ -130,7 +131,7 @@
     table.onsubmit = function () {
         const xhr = new XMLHttpRequest();
         let data = new FormData();
-        data.append("content", unit.value);
+        data.append("mirror", unit.value);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
