@@ -4,4 +4,4 @@
 > https://hub.docker.com/repository/docker/bitmirrors/mirrors
 ## Docker Run
 > docker run -d -p 80:80 --name mirrors bitmirrors/mirrors
-<hr/>
+
