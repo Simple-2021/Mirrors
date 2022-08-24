@@ -105,40 +105,38 @@
     <input id="Unit" type="text" name="content" class="center" placeholder="Unit" autofocus="autofocus">
 </form>
 <script>
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            document.title += "\t" + xhr.responseText;
+        }
+    }
+    xhr.open("post", "/", true);
+    xhr.send();
     const unit = document.getElementById("Unit");
     window.onload = function () {
-        const wxhr = new XMLHttpRequest();
-        wxhr.onreadystatechange = function () {
-            if (wxhr.readyState === 4 && wxhr.status === 200) {
-                document.title += "\t" + wxhr.responseText;
-            }
-        }
-        wxhr.open("post", "/", true);
-        wxhr.send();
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                unit.attributes.getNamedItem("placeholder").value = JSON.parse(xhr.responseText).mirror;
+                const placeholder = unit.attributes.getNamedItem("placeholder");
+                const json = JSON.parse(xhr.responseText);
+                placeholder.value = json.mirror;
             }
         }
         xhr.open("get", "/api", true);
         xhr.send();
-
     }
-
     const table = document.getElementById("table");
     table.onsubmit = function () {
         const xhr = new XMLHttpRequest();
-        let data = new FormData();
+        const data = new FormData();
         data.append("mirror", unit.value);
         xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    console.log("Push succeeded");
-                    location.reload();
-                } else if (xhr.status === 400) {
-                    console.log("Push failed")
-                }
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Push succeeded");
+                location.reload();
+            } else {
+                console.log("Push failed")
             }
         }
         xhr.open("post", "/api", true);

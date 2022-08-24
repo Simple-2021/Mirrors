@@ -31,11 +31,7 @@ class AppDataController {
     @PostMapping("/api")
     fun postMirror(mirror: String, response: HttpServletResponse) {
         synchronized(this) {
-            if (mirror.isNotEmpty()) {
-                mirrors.add(mirror.trim())
-            } else {
-                response.status = 400
-            }
+            if (mirror.isNotEmpty()) mirrors.add(mirror.trim())
         }
     }
 
