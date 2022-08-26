@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
 import javax.annotation.Resource
-import javax.servlet.http.HttpServletResponse
 
 
 @RestController
@@ -15,8 +14,8 @@ class AppDataController {
     private lateinit var mirrors: LinkedList<String>
 
     @PostMapping("/")
-    fun getCount(): Long {
-        return mirrors.size.toLong()
+    fun getCount(): Int {
+        return mirrors.size
     }
 
     @GetMapping("/api")
@@ -29,9 +28,12 @@ class AppDataController {
     }
 
     @PostMapping("/api")
-    fun postMirror(mirror: String, response: HttpServletResponse) {
+    fun postMirror(mirror: String) {
+        @Suppress("NAME_SHADOWING")
+        var mirror = mirror
         synchronized(this) {
-            if (mirror.isNotEmpty()) mirrors.add(mirror.trim())
+            mirror = mirror.trim { it <= ' ' }
+            if (mirror.isNotEmpty()) mirrors.add(mirror)
         }
     }
 

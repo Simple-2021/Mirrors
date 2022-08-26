@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh">
-
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <!--suppress HtmlUnknownTarget -->
+    <link href="favicon.ico" id="favicon" rel="shortcut icon" type="svg+xml"/>
     <title>Mirrors</title>
     <!-- :root -->
     <style>
@@ -43,6 +43,7 @@
         input::-webkit-input-placeholder {
             color: var(--placeholder-color);
         }
+
     </style>
     <!-- class:style -->
     <style>
@@ -51,6 +52,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
     </style>
     <!-- id:style -->
     <style>
@@ -62,6 +64,7 @@
             border: 1px solid var(--border-color);
             background-color: var(--background-color);
         }
+
     </style>
     <!-- media:style -->
     <style>
@@ -96,55 +99,104 @@
                 min-width: 240px;
             }
         }
+
     </style>
+
 </head>
 
 <body class="center">
-<form id="table" method="post" autocomplete="off">
+<form autocomplete="off" id="frame" method="post">
     <!--suppress HtmlFormInputWithoutLabel -->
-    <input id="Unit" type="text" name="content" class="center" placeholder="Unit" autofocus="autofocus">
+    <input autofocus="autofocus" class="center" id="Unit" name="content" placeholder="Unit" type="text">
+
 </form>
+<!--element-->
 <script>
-    const xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            document.title += "\t" + xhr.responseText;
+    const unit = document.getElementById("Unit");
+    const frame = document.getElementById("frame");
+    const favicon = document.getElementById("favicon");
+
+    const listener = {
+        dark: (mediaQueryList) => {
+            // noinspection JSBitwiseOperatorUsage
+            if (mediaQueryList | mediaQueryList.matches) {
+                favicon.href = "favicon.ico?dark=true";
+            }
+        },
+        light: (mediaQueryList) => {
+            // noinspection JSBitwiseOperatorUsage
+            if (mediaQueryList | mediaQueryList.matches) {
+                favicon.href = "favicon.ico";
+            }
         }
     }
-    xhr.open("post", "/", true);
-    xhr.send();
-    const unit = document.getElementById("Unit");
-    window.onload = function () {
+
+</script>
+<!--method-->
+<script>
+    const refresh = function () {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const title = "Mirrors".padEnd(8) + xhr.responseText;
+                if (title !== document.title) {
+                    document.title = title;
+                    refreshMirror();
+                }
+            }
+        }
+        xhr.open("post", "/", true);
+        xhr.send();
+    }
+    const refreshMirror = function () {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 const placeholder = unit.attributes.getNamedItem("placeholder");
                 const json = JSON.parse(xhr.responseText);
-                placeholder.value = json.mirror;
+                ({mirror: placeholder.value} = json);
             }
         }
         xhr.open("get", "/api", true);
         xhr.send();
     }
-    const table = document.getElementById("table");
-    table.onsubmit = function () {
+
+</script>
+<!--main-->
+<script>
+    refresh();
+    // window.setInterval(refresh, 106);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", listener.dark)
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", listener.light)
+
+</script>
+<!--event-->
+<script>
+    window.onload = function () {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            listener.dark(true)
+        }
+    }
+    frame.onsubmit = function () {
         const xhr = new XMLHttpRequest();
-        const data = new FormData();
-        data.append("mirror", unit.value);
+        const form = new FormData();
+        const data = unit.value;
+        form.append("mirror", data.replace(data[0], data[0].toUpperCase()));
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log("Push succeeded");
+                console.log("succeeded");
                 location.reload();
             } else {
-                console.log("Push failed")
+                console.log("failed")
             }
         }
         xhr.open("post", "/api", true);
-        xhr.send(data);
+        xhr.send(form);
         return false;
     }
 
 </script>
+
 </body>
 
 </html>

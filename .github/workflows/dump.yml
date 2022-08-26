@@ -1,3 +1,0 @@
-name:Github Actions Dump
-on: [push]
-jobs:
