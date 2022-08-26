@@ -1,5 +1,6 @@
 package com.example.mirrors.controller
 
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
@@ -16,6 +17,11 @@ class AppDataController {
     @PostMapping("/")
     fun getCount(): Int {
         return mirrors.size
+    }
+
+    @DeleteMapping("/")
+    fun removeAll() {
+        for (i in 1 until mirrors.size) mirrors.removeLast()
     }
 
     @GetMapping("/api")
