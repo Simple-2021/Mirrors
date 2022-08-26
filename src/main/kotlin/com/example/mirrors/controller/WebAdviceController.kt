@@ -6,7 +6,6 @@ import org.springframework.web.servlet.ModelAndView
 
 @ControllerAdvice
 class WebAdviceController {
-
     @ExceptionHandler(value = [Exception::class])
     fun anyException(e: Exception): ModelAndView {
         return ModelAndView("application")
