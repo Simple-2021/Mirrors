@@ -29,12 +29,8 @@ class AppDataController {
 
     @PostMapping("/api")
     fun postMirror(mirror: String) {
-        @Suppress("NAME_SHADOWING")
-        var mirror = mirror
-        synchronized(this) {
-            mirror = mirror.trim { it <= ' ' }
-            if (mirror.isNotEmpty()) mirrors.add(mirror)
-        }
+        if (mirror.isNotEmpty()) synchronized(this) { mirrors.add(mirror) }
     }
+
 
 }

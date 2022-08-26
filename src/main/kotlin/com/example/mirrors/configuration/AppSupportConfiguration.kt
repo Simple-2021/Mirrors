@@ -10,7 +10,7 @@ class AppSupportConfiguration : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
             .allowCredentials(true)
-            .allowedOriginPatterns("localhost","mirrors.com")
+            .allowedOriginPatterns("*")
             .allowedMethods("GET","PUT","POST","DELETE")
             .allowedHeaders("*")
             .exposedHeaders("*")

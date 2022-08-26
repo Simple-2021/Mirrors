@@ -106,7 +106,7 @@
 <body class="center">
 <form autocomplete="off" id="frame" method="post">
     <!--suppress HtmlFormInputWithoutLabel -->
-    <input autofocus="autofocus" class="center" id="Unit" name="content" placeholder="Unit" type="text">
+    <input autofocus="autofocus" class="center" id="Unit" name="mirror" placeholder="Unit" type="text">
 
 </form>
 <!--element-->
@@ -176,17 +176,25 @@
             listener.dark(true)
         }
     }
+    const f0 = function (data) {
+        if (data.length > 0) {
+            return data.replace(data[0], data[0].toUpperCase());
+        }
+        return "";
+    }
     frame.onsubmit = function () {
         const xhr = new XMLHttpRequest();
         const form = new FormData();
-        const data = unit.value;
-        form.append("mirror", data.replace(data[0], data[0].toUpperCase()));
+        const data = f0(unit.value.trim());
+        form.append("mirror", data);
         xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log("succeeded");
-                location.reload();
-            } else {
-                console.log("failed")
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    console.log("succeeded");
+                    location.reload();
+                } else {
+                    console.log("failed")
+                }
             }
         }
         xhr.open("post", "/api", true);
