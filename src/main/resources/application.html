@@ -114,6 +114,7 @@
     const unit = document.getElementById("Unit");
     const frame = document.getElementById("frame");
     const favicon = document.getElementById("favicon");
+    const placeholder = unit.attributes.getNamedItem("placeholder");
 
     Window.prototype.dark = function (mediaQueryList) {
         // noinspection JSBitwiseOperatorUsage
@@ -133,6 +134,7 @@
         }
         return "";
     }
+    // noinspection JSUnusedGlobalSymbols
     String.prototype.lastUpperCase = function () {
         if (this.length > 0) {
             const lastIndex = this.length - 1;
@@ -140,6 +142,30 @@
         }
         return "";
     }
+    String.prototype.zh_CN = function () {
+        let cn = 0, en = 0;
+        for (let char of this) {
+            char.charCodeAt(0) > 255 ? cn++ : en++;
+        }
+        return cn >= en;
+    }
+    String.prototype.appendPunctuation = function () {
+        const chars = ",.!?，。？！…";
+        let index = -1;
+        let text = this;
+        for (let char of chars) {
+            if (index < this.lastIndexOf(char)) {
+                index = this.lastIndexOf(char);
+            }
+        }
+        if (index !== -1) {
+            text = this.slice(-1 * this.length + index + 1);
+            return this + (text.zh_CN() ? "。" : ".");
+        } else {
+            return this;
+        }
+    }
+
 
 </script>
 <!--method-->
@@ -150,32 +176,34 @@
             if (xhr.readyState === 4 && xhr.status === 200) {
                 const title = "Mirrors".padEnd(8) + xhr.responseText;
                 if (title !== document.title) {
-                    document.title = title;
                     refreshMirror();
                 }
             }
         }
-        xhr.open("post", "/", true);
+        xhr.open("get", "/api", true);
         xhr.send();
     }
     const refreshMirror = function () {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                const placeholder = unit.attributes.getNamedItem("placeholder");
                 const json = JSON.parse(xhr.responseText);
-                ({mirror: placeholder.value} = json);
+                document.title = "Mirrors".padEnd(8) + json.count
+                placeholder.value = json.mirror;
             }
         }
-        xhr.open("get", "/api", true);
+        xhr.open("get", "/api/mirror", true);
         xhr.send();
+    }
+    const downloadMirror = function () {
+        //  TODO
     }
 
 </script>
 <!--main-->
 <script>
     refresh();
-    window.setInterval(refresh, 106);
+    // window.setInterval(refresh, 106);
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", window.dark)
     window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", window.light)
 
@@ -192,19 +220,19 @@
     frame.onsubmit = function () {
         const xhr = new XMLHttpRequest();
         const form = new FormData();
-        const data = unit.value.trim().firstUpperCase();
+        const data = unit.value.trim().firstUpperCase().appendPunctuation();
         form.append("mirror", data);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    console.log("Succeeded");
+                    console.log("succeeded");
                     location.reload();
                 } else {
-                    console.log("Failed")
+                    console.log("failed")
                 }
             }
         }
-        xhr.open("post", "/api", true);
+        xhr.open("post", "/", true);
         xhr.send(form);
         return false;
     }
