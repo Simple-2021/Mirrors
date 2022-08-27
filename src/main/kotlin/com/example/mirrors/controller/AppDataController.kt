@@ -2,20 +2,22 @@ package com.example.mirrors.controller
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
 import javax.annotation.Resource
+import javax.servlet.http.HttpServletResponse
 
 
 @RestController
 class AppDataController {
 
     @Resource(name = "mirrors")
-    private lateinit var mirrors: LinkedList<String>
+    private lateinit var mirrors: TreeMap<Date, String>
 
     @PostMapping("/")
     fun postMirror(mirror: String) {
-        if (mirror.isNotEmpty()) synchronized(this) { mirrors.add(mirror) }
+        if (mirror.isNotEmpty()) synchronized(this) { mirrors.put(Date(), mirror) }
     }
 
     @GetMapping("/api")
@@ -27,19 +29,21 @@ class AppDataController {
     fun getMirror(): HashMap<String, Any> {
         return object : HashMap<String, Any>() {
             init {
-                put("mirror", mirrors.last)
+                put("mirror", mirrors.lastEntry().value)
                 put("count", mirrors.size)
             }
         }
     }
 
-    @PostMapping("/api")
-    fun download() {
-        synchronized(this) {
-            for (i in mirrors) {
-                println(i)
-            }
+    @GetMapping("/api/download")
+    fun download(@RequestParam(defaultValue = "mirrors.txt") file: String?, response: HttpServletResponse) {
+        response.contentType = "application/octet-stream"
+        response.setHeader("Content-Disposition", "attachment;filename=$file")
+        var content = String()
+        for (i in mirrors) {
+            content += i.toString() + "\n"
         }
+        response.outputStream.write(content.encodeToByteArray())
     }
 
 

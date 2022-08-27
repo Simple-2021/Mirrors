@@ -9,10 +9,10 @@ import java.util.*
 class AppConfiguration {
 
     @Bean(name = ["mirrors"])
-    fun getMirrors(): LinkedList<String> {
-        return object : LinkedList<String>() {
+    fun getMirrors(): TreeMap<Date, String> {
+        return object : TreeMap<Date, String>() {
             init {
-                add("Unit")
+                put(Date(), "Unit")
             }
         }
     }

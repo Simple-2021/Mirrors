@@ -117,14 +117,12 @@
     const placeholder = unit.attributes.getNamedItem("placeholder");
 
     Window.prototype.dark = function (mediaQueryList) {
-        // noinspection JSBitwiseOperatorUsage
-        if (mediaQueryList | mediaQueryList.matches) {
+        if (mediaQueryList || mediaQueryList.matches) {
             favicon.href = "favicon.ico?dark=true";
         }
     }
     Window.prototype.light = function (mediaQueryList) {
-        // noinspection JSBitwiseOperatorUsage
-        if (mediaQueryList | mediaQueryList.matches) {
+        if (mediaQueryList || mediaQueryList.matches) {
             favicon.href = "favicon.ico";
         }
     }
@@ -195,8 +193,20 @@
         xhr.open("get", "/api/mirror", true);
         xhr.send();
     }
-    const downloadMirror = function () {
-        //  TODO
+    const downloadMirror = () => {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                alert(xhr.getResponseHeader("filename"));
+            }
+        }
+        xhr.open("get", "/api/download", true)
+        xhr.response.contentType = "application/octet-stream"
+        xhr.send()
+    }
+
+    const download = () => {
+        location.replace("/api/download")
     }
 
 </script>
@@ -215,6 +225,12 @@
             window.dark(true);
         } else {
             window.light(true);
+        }
+    }
+    window.onkeydown = function (ev) {
+        if (ev.ctrlKey && (ev.key === "s" || ev.key === "S")) {
+            download();
+            return false;
         }
     }
     frame.onsubmit = function () {
