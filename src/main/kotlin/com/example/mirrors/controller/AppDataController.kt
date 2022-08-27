@@ -39,11 +39,11 @@ class AppDataController {
     fun download(@RequestParam(defaultValue = "mirrors.txt") file: String?, response: HttpServletResponse) {
         response.contentType = "application/octet-stream"
         response.setHeader("Content-Disposition", "attachment;filename=$file")
-        var content = String()
+        var body = String()
         for (i in mirrors) {
-            content += i.toString() + "\n"
+            body += i.toString() + "\n"
         }
-        response.outputStream.write(content.encodeToByteArray())
+        response.outputStream.write(body.encodeToByteArray())
     }
 
 

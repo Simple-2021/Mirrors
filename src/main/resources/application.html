@@ -193,17 +193,17 @@
         xhr.open("get", "/api/mirror", true);
         xhr.send();
     }
-    const downloadMirror = () => {
-        const xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                alert(xhr.getResponseHeader("filename"));
-            }
-        }
-        xhr.open("get", "/api/download", true)
-        xhr.response.contentType = "application/octet-stream"
-        xhr.send()
-    }
+    // const downloadMirror = () => {
+    //     const xhr = new XMLHttpRequest();
+    //     xhr.onreadystatechange = () => {
+    //         if (xhr.readyState === 4 && xhr.status === 200) {
+    //             alert(xhr.getResponseHeader("filename"));
+    //         }
+    //     }
+    //     xhr.open("get", "/api/download", true)
+    //     xhr.response.contentType = "application/octet-stream"
+    //     xhr.send()
+    // }
 
     const download = () => {
         location.replace("/api/download")
