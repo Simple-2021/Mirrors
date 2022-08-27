@@ -193,20 +193,25 @@
         xhr.open("get", "/api/mirror", true);
         xhr.send();
     }
-    // const downloadMirror = () => {
-    //     const xhr = new XMLHttpRequest();
-    //     xhr.onreadystatechange = () => {
-    //         if (xhr.readyState === 4 && xhr.status === 200) {
-    //             alert(xhr.getResponseHeader("filename"));
-    //         }
-    //     }
-    //     xhr.open("get", "/api/download", true)
-    //     xhr.response.contentType = "application/octet-stream"
-    //     xhr.send()
-    // }
-
-    const download = () => {
-        location.replace("/api/download")
+    const downloadMirror = () => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+            const blob = new Blob([xhr.response], {type: "application/octet-stream"});
+            const contentDisposition = xhr.getResponseHeader("Content-Disposition");
+            let link = document.createElement("a");
+            let fileName = "unknown.xxx";
+            if (contentDisposition) {
+                const descArrays = contentDisposition.split("=");
+                fileName = decodeURI(descArrays[1]);
+            }
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(link.href);
+        }
+        xhr.open("get","/api/download");
+        xhr.send();
     }
 
 </script>
@@ -229,7 +234,7 @@
     }
     window.onkeydown = function (ev) {
         if (ev.ctrlKey && (ev.key === "s" || ev.key === "S")) {
-            download();
+            downloadMirror();
             return false;
         }
     }
