@@ -115,19 +115,30 @@
     const frame = document.getElementById("frame");
     const favicon = document.getElementById("favicon");
 
-    const listener = {
-        dark: (mediaQueryList) => {
-            // noinspection JSBitwiseOperatorUsage
-            if (mediaQueryList | mediaQueryList.matches) {
-                favicon.href = "favicon.ico?dark=true";
-            }
-        },
-        light: (mediaQueryList) => {
-            // noinspection JSBitwiseOperatorUsage
-            if (mediaQueryList | mediaQueryList.matches) {
-                favicon.href = "favicon.ico";
-            }
+    Window.prototype.dark = function (mediaQueryList) {
+        // noinspection JSBitwiseOperatorUsage
+        if (mediaQueryList | mediaQueryList.matches) {
+            favicon.href = "favicon.ico?dark=true";
         }
+    }
+    Window.prototype.light = function (mediaQueryList) {
+        // noinspection JSBitwiseOperatorUsage
+        if (mediaQueryList | mediaQueryList.matches) {
+            favicon.href = "favicon.ico";
+        }
+    }
+    String.prototype.firstUpperCase = function () {
+        if (this.length > 0) {
+            return this[0].toUpperCase() + this.slice(1);
+        }
+        return "";
+    }
+    String.prototype.lastUpperCase = function () {
+        if (this.length > 0) {
+            const lastIndex = this.length - 1;
+            return this.slice(0, lastIndex) + this[lastIndex].toUpperCase()
+        }
+        return "";
     }
 
 </script>
@@ -164,36 +175,32 @@
 <!--main-->
 <script>
     refresh();
-    // window.setInterval(refresh, 106);
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", listener.dark)
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", listener.light)
+    window.setInterval(refresh, 106);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", window.dark)
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", window.light)
 
 </script>
 <!--event-->
 <script>
     window.onload = function () {
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            listener.dark(true)
+            window.dark(true);
+        } else {
+            window.light(true);
         }
-    }
-    const f0 = function (data) {
-        if (data.length > 0) {
-            return data.replace(data[0], data[0].toUpperCase());
-        }
-        return "";
     }
     frame.onsubmit = function () {
         const xhr = new XMLHttpRequest();
         const form = new FormData();
-        const data = f0(unit.value.trim());
+        const data = unit.value.trim().firstUpperCase();
         form.append("mirror", data);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    console.log("succeeded");
+                    console.log("Succeeded");
                     location.reload();
                 } else {
-                    console.log("failed")
+                    console.log("Failed")
                 }
             }
         }
