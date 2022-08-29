@@ -30,7 +30,7 @@ class WebExceptionController(errorAttributes: ErrorAttributes, errorProperties: 
                 info.info(error)
             }
         }
-        response.status = 201
+        response.status = 200
         return ModelAndView("application")
     }
 
