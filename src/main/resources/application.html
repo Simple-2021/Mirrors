@@ -117,12 +117,12 @@
     const placeholder = unit.attributes.getNamedItem("placeholder");
 
     Window.prototype.dark = function (mediaQueryList) {
-        if (mediaQueryList || mediaQueryList.matches) {
+        if (!!typeof (mediaQueryList) || mediaQueryList.matches) {
             favicon.href = "favicon.ico?dark=true";
         }
     }
     Window.prototype.light = function (mediaQueryList) {
-        if (mediaQueryList || mediaQueryList.matches) {
+        if (!!typeof (mediaQueryList) || mediaQueryList.matches) {
             favicon.href = "favicon.ico";
         }
     }
@@ -159,9 +159,8 @@
         if (index !== -1) {
             text = this.slice(-1 * this.length + index + 1);
             return this + (text.zh_CN() ? "。" : ".");
-        } else {
-            return this;
         }
+        return this;
     }
 
 
@@ -198,27 +197,45 @@
         xhr.onload = function () {
             const blob = new Blob([xhr.response], {type: "application/octet-stream"});
             const contentDisposition = xhr.getResponseHeader("Content-Disposition");
-            let link = document.createElement("a");
-            let fileName = "unknown.xxx";
+            const a = document.createElement("a");
+            let fileName;
             if (contentDisposition) {
                 const descArrays = contentDisposition.split("=");
                 fileName = decodeURI(descArrays[1]);
             }
-            link.href = window.URL.createObjectURL(blob);
-            link.download = fileName;
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(link.href);
+            a.href = window.URL.createObjectURL(blob);
+            a.download = fileName;
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(a.href);
         }
-        xhr.open("get","/api/download");
+        xhr.open("get", "/api/download");
         xhr.send();
+    }
+    const uploadMirror = () => {
+        const xhr = new XMLHttpRequest();
+        const form = new FormData();
+        const file = document.createElement("input");
+        file.type = "file";
+        file.click();
+        file.onchange = () => {
+            const fir = file.files.item(0);
+            form.append("file", fir);
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    alert("ok");
+                }
+            }
+            xhr.open("post", "/api/upload");
+            xhr.send(form);
+        }
     }
 
 </script>
 <!--main-->
 <script>
     refresh();
-    // window.setInterval(refresh, 106);
+    window.setInterval(refresh, 106);
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", window.dark)
     window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", window.light)
 
@@ -233,7 +250,10 @@
         }
     }
     window.onkeydown = function (ev) {
-        if (ev.ctrlKey && (ev.key === "s" || ev.key === "S")) {
+        if (ev.ctrlKey && (ev.key === "o" || ev.key === "O")) {
+            uploadMirror();
+            return false;
+        } else if (ev.ctrlKey && (ev.key === "s" || ev.key === "S")) {
             downloadMirror();
             return false;
         }

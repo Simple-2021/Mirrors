@@ -1,9 +1,11 @@
 package com.example.mirrors.controller
 
+import com.example.mirrors.service.DownloadService
+import com.example.mirrors.service.UploadService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletResponse
@@ -35,16 +37,22 @@ class AppDataController {
         }
     }
 
+    @Resource(name = "downloadService")
+    private lateinit var download: DownloadService
+
     @GetMapping("/api/download")
-    fun download(@RequestParam(defaultValue = "mirrors.txt") file: String?, response: HttpServletResponse) {
+    fun download(file: String?, response: HttpServletResponse) {
         response.contentType = "application/octet-stream"
-        response.setHeader("Content-Disposition", "attachment;filename=$file")
-        var body = String()
-        for (i in mirrors) {
-            body += i.toString() + "\n"
-        }
-        response.outputStream.write(body.encodeToByteArray())
+        response.setHeader("Content-Disposition", "attachment;filename=" + (file ?: "mirrors.html"))
+        response.outputStream.write(if (file != null) download.download(file) else download.target(mirrors))
     }
 
+    @Resource(name = "uploadService")
+    private lateinit var upload: UploadService
+
+    @PostMapping("/api/upload")
+    fun uploads(file: Array<MultipartFile>) {
+        upload.upload(file)
+    }
 
 }

@@ -1,7 +1,9 @@
 package com.example.mirrors.configuration
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.PropertySource
 import org.springframework.core.io.ClassPathResource
 import java.util.*
 
@@ -15,6 +17,10 @@ class AppConfiguration {
                 put(Date(), "Unit")
             }
         }
+    }
+    @Bean(name = ["upload"])
+    fun upload(): String {
+        return "target"
     }
 
     @Bean(name = ["favicon"])
