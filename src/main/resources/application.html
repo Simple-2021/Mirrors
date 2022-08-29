@@ -138,7 +138,7 @@
     String.prototype.lastUpperCase = function () {
         if (this.length > 0) {
             const lastIndex = this.length - 1;
-            return this.slice(0, lastIndex) + this[lastIndex].toUpperCase()
+            return this.slice(0, lastIndex) + this[lastIndex].toUpperCase();
         }
         return "";
     }
@@ -187,7 +187,7 @@
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 const json = JSON.parse(xhr.responseText);
-                document.title = "Mirrors".padEnd(8) + json.count
+                document.title = "Mirrors".padEnd(8) + json.count;
                 placeholder.value = json.mirror;
             }
         }
@@ -224,8 +224,12 @@
             const fir = file.files.item(0);
             form.append("file", fir);
             xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    alert("ok");
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log("download succeed");
+                    } else {
+                        console.log("download failed");
+                    }
                 }
             }
             xhr.open("post", "/api/upload");
@@ -238,8 +242,8 @@
 <script>
     refresh();
     window.setInterval(refresh, 106);
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", window.dark)
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", window.light)
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", window.dark);
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", window.light);
 
 </script>
 <!--event-->
@@ -268,10 +272,10 @@
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    console.log("succeeded");
+                    console.log("succeed");
                     location.reload();
                 } else {
-                    console.log("failed")
+                    console.log("failed");
                 }
             }
         }
