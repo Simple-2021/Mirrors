@@ -13,11 +13,11 @@ class UploadService {
     fun upload(f: MultipartFile) {
         val i = File("$uploads\\" + f.originalFilename)
         try {
-            println(i.path)
             i.createNewFile()
             i.writeBytes(f.bytes)
+
         } catch (e: Exception) {
-            throw e
+            println(e.message)
         }
     }
 
@@ -27,7 +27,7 @@ class UploadService {
                 upload(f)
             }
         } catch (e: Exception) {
-            throw e
+            println(e.message)
         }
     }
 

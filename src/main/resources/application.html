@@ -218,6 +218,8 @@
         const xhr = new XMLHttpRequest();
         const form = new FormData();
         const file = document.createElement("input");
+        file.formEnctype="multipart/form-data"
+        file.multiple = true;
         file.type = "file";
         file.click();
         file.onchange = () => {
@@ -241,7 +243,7 @@
 <!--main-->
 <script>
     refresh();
-    window.setInterval(refresh, 106);
+    // window.setInterval(refresh, 106);
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", window.dark);
     window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", window.light);
 

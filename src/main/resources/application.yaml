@@ -3,6 +3,13 @@ spring:
     name: Mirrors
   web:
     locale: zh_CN
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 128MB
+      file-size-threshold: 0
+      max-request-size: 64MB
+      resolve-lazily: false
 server:
   port: 443
   ssl:

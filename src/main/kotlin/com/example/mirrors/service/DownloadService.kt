@@ -13,7 +13,10 @@ class DownloadService {
 
     fun download(f: String): ByteArray {
         val i = File("$uploads\\$f")
-        return i.readBytes()
+        if (i.exists() && i.isFile) {
+            return i.readBytes()
+        }
+        return ByteArray(0)
     }
 
     fun target(tree: TreeMap<Date, String>): ByteArray {
@@ -39,7 +42,8 @@ class DownloadService {
         params[4] = "\t<title>Mirrors</title>"
         params[5] = "\t<style>"
         params[6] = "\t\t:root {\n\t\t\t--color: #111;\n\t\t\t--background-color: #fff;\n\t\t}"
-        params[7] = "\t\t@media (prefers-color-scheme: dark){\n\t\t\t:root {\n\t\t\t\t--color: #eee;\n\t\t\t\t--background-color: #111;\n\t\t\t}\n\t\t}"
+        params[7] =
+            "\t\t@media (prefers-color-scheme: dark){\n\t\t\t:root {\n\t\t\t\t--color: #eee;\n\t\t\t\t--background-color: #111;\n\t\t\t}\n\t\t}"
         params[8] = "\t\tbody {\n\t\t\tpadding: 25px;\n\t\t\tbackground-color: var(--background-color);\n\t\t}"
         params[9] = "\t\tp {\n\t\t\tfont-size: 20px;\n\t\t\tmargin-top: 0;\n\t\t\tcolor: var(--color)\n\t\t}"
         params[10] = "\n\t</style>"
