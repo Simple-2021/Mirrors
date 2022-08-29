@@ -117,12 +117,14 @@
     const placeholder = unit.attributes.getNamedItem("placeholder");
 
     Window.prototype.dark = function (mediaQueryList) {
-        if (!!typeof (mediaQueryList) || mediaQueryList.matches) {
+        // noinspection JSBitwiseOperatorUsage
+        if (mediaQueryList | mediaQueryList.matches) {
             favicon.href = "favicon.ico?dark=true";
         }
     }
     Window.prototype.light = function (mediaQueryList) {
-        if (!!typeof (mediaQueryList) || mediaQueryList.matches) {
+        // noinspection JSBitwiseOperatorUsage
+        if (mediaQueryList | mediaQueryList.matches) {
             favicon.href = "favicon.ico";
         }
     }
