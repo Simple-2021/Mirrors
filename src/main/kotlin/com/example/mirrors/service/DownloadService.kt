@@ -12,7 +12,7 @@ class DownloadService {
     private lateinit var uploads: String
 
     fun download(f: String): ByteArray {
-        val i = File("$uploads\\$f")
+        val i = File("$uploads/$f")
         if (i.exists() && i.isFile) {
             return i.readBytes()
         }

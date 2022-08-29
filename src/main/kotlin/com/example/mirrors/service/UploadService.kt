@@ -11,23 +11,14 @@ class UploadService {
     private lateinit var uploads: String
 
     fun upload(f: MultipartFile) {
-        val i = File("$uploads\\" + f.originalFilename)
-        try {
-            i.createNewFile()
-            i.writeBytes(f.bytes)
-
-        } catch (e: Exception) {
-            println(e.message)
-        }
+        val i = File("$uploads/" + f.originalFilename)
+        i.createNewFile()
+        i.writeBytes(f.bytes)
     }
 
     fun upload(fs: Array<MultipartFile>) {
-        try {
-            for (f in fs) {
-                upload(f)
-            }
-        } catch (e: Exception) {
-            println(e.message)
+        for (f in fs) {
+            upload(f)
         }
     }
 

@@ -7,11 +7,14 @@ MAINTAINER ${Author} ${Email}
 #ARG Descript
 ARG Desc
 LABEL desc=${Desc}
+#ARG WORKDIR
+ARG WORK_PATH
+WORKDIR ${WORK_PATH}
 #ARG JAR
 ARG JAR_FILE
-ADD target/${JAR_FILE} /home/apps/app.jar
+ADD target/${JAR_FILE} app.jar
 #ARG SSL
 ARG SSL
 EXPOSE ${SSL}
 #COMMAND
-ENTRYPOINT ["java","-jar","/home/apps/app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]

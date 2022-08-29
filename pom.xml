@@ -88,6 +88,7 @@
                         <Desc>nothing</Desc>
                         <Email>light.link.point@gmail.com</Email>
                         <SSL>443</SSL>
+                        <WORK_PATH>/home/apps</WORK_PATH>
                         <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
                 </configuration>

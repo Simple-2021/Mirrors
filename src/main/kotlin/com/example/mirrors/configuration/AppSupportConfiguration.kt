@@ -1,7 +1,10 @@
 package com.example.mirrors.configuration
 
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.servlet.config.annotation.*
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.view.InternalResourceViewResolver
 
 @Configuration
@@ -11,10 +14,11 @@ class AppSupportConfiguration : WebMvcConfigurer {
         registry.addMapping("/**")
             .allowCredentials(true)
             .allowedOriginPatterns("*")
-            .allowedMethods("GET","PUT","POST","DELETE")
+            .allowedMethods("GET", "PUT", "POST", "DELETE")
             .allowedHeaders("*")
             .exposedHeaders("*")
             .maxAge(3600)
+        super.addCorsMappings(registry)
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {

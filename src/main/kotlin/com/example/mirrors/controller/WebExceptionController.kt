@@ -1,5 +1,6 @@
 package com.example.mirrors.controller
 
+import org.apache.commons.logging.LogFactory
 import org.springframework.boot.autoconfigure.web.ErrorProperties
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController
 import org.springframework.boot.web.servlet.error.ErrorAttributes
@@ -15,7 +16,8 @@ class WebExceptionController(errorAttributes: ErrorAttributes, errorProperties: 
     BasicErrorController(errorAttributes, errorProperties) {
 
     override fun errorHtml(request: HttpServletRequest, response: HttpServletResponse): ModelAndView {
-        response.status = 200
+        val info = LogFactory.getLog("Application.Exception.Servlet")
+        info.error(response.status)
         return ModelAndView("application")
     }
 
