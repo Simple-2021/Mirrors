@@ -43,7 +43,7 @@ class AppDataController {
     @GetMapping("/api/download")
     fun download(file: String?, response: HttpServletResponse) {
         response.contentType = "application/octet-stream"
-        response.setHeader("Content-Disposition", "attachment;filename=" + (file ?: "mirrors.html"))
+        response.setHeader("Content-Disposition", "attachment;filename=" + (file ?: "Mirrors.html"))
         response.outputStream.write(if (file != null) download.download(file) else download.target(mirrors))
     }
 
