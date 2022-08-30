@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import java.net.URLEncoder
 import java.util.*
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletResponse
@@ -48,11 +49,22 @@ class AppDataController {
     @Resource(name = "downloadService")
     private lateinit var download: DownloadService
 
+    @Suppress("NAME_SHADOWING")
     @GetMapping("/api/download")
     fun download(file: String?, response: HttpServletResponse) {
         response.contentType = "application/octet-stream"
-        response.setHeader("Content-Disposition", "attachment;filename=" + (file ?: "Mirrors.html"))
-        response.outputStream.write(if (file != null) download.download(file) else download.target(mirrors.entries))
+        response.setHeader(
+            "Content-Disposition",
+            "attachment;filename=" + (if (file != null) URLEncoder.encode(file, "utf-8")
+                .replace("+", "%20") else "Mirrors.html")
+        )
+        response.outputStream.write(
+            if (file.isNullOrEmpty())
+                download.target(mirrors.entries)
+            else
+                download.download(file)
+        )
+        response.flushBuffer()
     }
 
 }
