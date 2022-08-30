@@ -73,7 +73,6 @@ class BundleUtils {
         params[3] += "\t\t" + any + "\n"
     }
 
-
     fun inP(e: Map.Entry<Any, Any>): String {
         val key = "<p>\n\t\t${e.key}\n\t</p>\n"
         val value = "\t<p>\n\t\t${e.value}\n\t</p>"
