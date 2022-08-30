@@ -23,9 +23,9 @@ class AppController {
 
     @ResponseBody
     @RequestMapping("/favicon.ico")
-    fun icon(dark: Boolean, response: HttpServletResponse) {
+    fun icon(dark: Boolean?, response: HttpServletResponse) {
         response.contentType = "image/svg+xml"
-        if (dark) {
+        if (dark == true) {
             response.outputStream.write(darkicon)
         } else {
             response.outputStream.write(favicon)

@@ -1,5 +1,6 @@
 package com.example.mirrors.controller
 
+import com.google.gson.GsonBuilder
 import org.apache.commons.logging.LogFactory
 import org.springframework.boot.autoconfigure.web.ErrorProperties
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController
@@ -13,21 +14,29 @@ import javax.servlet.http.HttpServletResponse
 
 @Controller
 @RequestMapping("\${server.error.path:\${error.path:/error}}")
-class WebExceptionController(errorAttributes: ErrorAttributes, errorProperties: ErrorProperties) :
+class CustomExceptionController(errorAttributes: ErrorAttributes, errorProperties: ErrorProperties) :
     BasicErrorController(errorAttributes, errorProperties) {
 
     override fun errorHtml(request: HttpServletRequest, response: HttpServletResponse): ModelAndView {
-        val info = LogFactory.getLog("Application.Exception.Servlet")
+        val info = LogFactory.getLog(javaClass.simpleName)
         val error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML))
+        val except = GsonBuilder().disableHtmlEscaping().create().toJson(object : HashMap<String, String?>() {
+            init {
+                put(error["path"] as String, error["error"] as String?)
+            }
+        })
         when {
             response.status >= 500 -> {
-                info.warn(error)
+                info.warn(error["status"])
+                info.warn(except)
             }
             response.status >= 400 -> {
-                info.info(error)
+                info.info(error["status"])
+                info.info(except)
             }
             else -> {
-                info.info(error)
+                info.info(error["status"])
+                info.info(except)
             }
         }
         response.status = 200

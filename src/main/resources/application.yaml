@@ -3,13 +3,8 @@ spring:
     name: Mirrors
   web:
     locale: zh_CN
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 128MB
-      file-size-threshold: 0
-      max-request-size: 64MB
-      resolve-lazily: false
+  profiles:
+    active: dev
 server:
   port: 443
   ssl:
@@ -22,3 +17,32 @@ server:
       force: true
       enabled: true
       charset: UTF-8
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 128MB
+      file-size-threshold: 0
+      max-request-size: 64MB
+      resolve-lazily: false
+logging:
+  file:
+    name: target/log.log
+  charset:
+    console: UTF-8
+    file: UTF-8
+  level:
+    com:
+      example:
+        mirrors: info
+    org:
+      springframework:
+        boot: warn
+        web: warn
+      apache:
+        tomcat: warn
+        catalina: warn

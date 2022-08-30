@@ -12,8 +12,12 @@ class UploadService {
 
     fun upload(f: MultipartFile) {
         val i = File("$uploads/" + f.originalFilename)
-        i.createNewFile()
-        i.writeBytes(f.bytes)
+        if (!i.exists()) {
+            i.createNewFile()
+            i.writeBytes(f.bytes)
+        } else {
+            throw Exception()
+        }
     }
 
     fun upload(fs: Array<MultipartFile>) {

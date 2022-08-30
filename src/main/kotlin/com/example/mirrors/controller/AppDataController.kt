@@ -37,6 +37,14 @@ class AppDataController {
         }
     }
 
+    @Resource(name = "uploadService")
+    private lateinit var upload: UploadService
+
+    @PostMapping("/api/upload")
+    fun uploads(file: Array<MultipartFile>) {
+        upload.upload(file)
+    }
+
     @Resource(name = "downloadService")
     private lateinit var download: DownloadService
 
@@ -44,15 +52,7 @@ class AppDataController {
     fun download(file: String?, response: HttpServletResponse) {
         response.contentType = "application/octet-stream"
         response.setHeader("Content-Disposition", "attachment;filename=" + (file ?: "Mirrors.html"))
-        response.outputStream.write(if (file != null) download.download(file) else download.target(mirrors))
-    }
-
-    @Resource(name = "uploadService")
-    private lateinit var upload: UploadService
-
-    @PostMapping("/api/upload")
-    fun uploads(file: Array<MultipartFile>) {
-        upload.upload(file)
+        response.outputStream.write(if (file != null) download.download(file) else download.target(mirrors.entries))
     }
 
 }
