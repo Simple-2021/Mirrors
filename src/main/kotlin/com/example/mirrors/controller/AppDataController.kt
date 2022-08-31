@@ -2,7 +2,7 @@ package com.example.mirrors.controller
 
 import com.example.mirrors.service.DownloadService
 import com.example.mirrors.service.UploadService
-import com.example.mirrors.util.CustomModel
+import com.google.gson.JsonObject
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
@@ -16,25 +16,45 @@ import javax.servlet.http.HttpServletResponse
 class AppDataController {
 
     @Resource(name = "mirrors")
-    private lateinit var mirrors: TreeMap<Date, String>
+    private lateinit var mirrors: JsonObject
 
     @PostMapping("/")
     fun postMirror(mirror: String) {
-        if (mirror.isNotEmpty()) synchronized(this) { mirrors.put(Date(), mirror) }
+        if (mirror.isNotEmpty()) {
+            synchronized(this) {
+                val json = JsonObject()
+                json.addProperty("K", "${Date()}")
+                json.addProperty("V", mirror)
+                val index = "" + mirrors.size()
+                mirrors.add(index, json)
+            }
+        }
     }
 
     @GetMapping("/api")
     fun getCount(): Int {
-        return mirrors.size
+        return mirrors.size()
     }
 
     @GetMapping("/api/mirror")
-    fun getMirror(): HashMap<String, Any> {
-        return object : HashMap<String, Any>() {
-            init {
-                put("mirror", mirrors.lastEntry().value)
-                put("count", mirrors.size)
+    fun getMirror(index: Int?): String? {
+        return try {
+            val json = when {
+                index == null -> {
+                    mirrors["" + (mirrors.size() - 1)].asJsonObject
+                }
+                index < mirrors.size() -> {
+                    mirrors["" + index].asJsonObject
+                }
+                else -> {
+                    mirrors["" + (mirrors.size() - 1)].asJsonObject
+                }
             }
+            json.addProperty("K", mirrors.size())
+            json.toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
@@ -52,13 +72,7 @@ class AppDataController {
     @GetMapping("/api/download")
     fun download(file: String?, response: HttpServletResponse) {
         if (file.isNullOrEmpty()) {
-            val m = CustomModel()
-            m.setLanguage("zh-CN")
-            m.setCharset("UTF-8")
-            m.insertWithEntries(mirrors.entries)
-            response.contentType = "application/octet-stream"
-            response.setHeader("Content-Disposition", "attachment;filename=" + "Mirrors.html")
-            response.outputStream.write(m.getHtml().toByteArray(Charsets.UTF_8))
+            response.writer.println(download.filesInfo())
             response.flushBuffer()
         } else {
             download.download(file, response)

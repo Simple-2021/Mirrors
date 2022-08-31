@@ -1,5 +1,6 @@
 package com.example.mirrors.configuration
 
+import com.google.gson.JsonObject
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
@@ -10,12 +11,13 @@ import java.util.*
 class AppConfiguration {
 
     @Bean(name = ["mirrors"])
-    fun getMirrors(): TreeMap<Date, String> {
-        return object : TreeMap<Date, String>() {
-            init {
-                put(Date(), "Unit")
-            }
-        }
+    fun getMirrors(): JsonObject{
+        val jsonp=JsonObject()
+        val json=JsonObject()
+        json.addProperty("K","${Date()}")
+        json.addProperty("V","Unit")
+        jsonp.add("0",json)
+        return jsonp
     }
 
     @Bean(name = ["upload"])

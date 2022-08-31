@@ -1,6 +1,5 @@
 package com.example.mirrors.controller
 
-import com.google.gson.GsonBuilder
 import org.apache.commons.logging.LogFactory
 import org.springframework.boot.autoconfigure.web.ErrorProperties
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController
@@ -20,11 +19,7 @@ class CustomExceptionController(errorAttributes: ErrorAttributes, errorPropertie
     override fun errorHtml(request: HttpServletRequest, response: HttpServletResponse): ModelAndView {
         val info = LogFactory.getLog(javaClass.simpleName)
         val error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML))
-        val except = GsonBuilder().disableHtmlEscaping().create().toJson(object : HashMap<String, String?>() {
-            init {
-                put(error["path"] as String, error["error"] as String?)
-            }
-        })
+        val except = "URI:" + error["path"] + "\tINFO:" + error["error"]
         when {
             response.status >= 500 -> {
                 info.warn(error["status"])
@@ -39,7 +34,7 @@ class CustomExceptionController(errorAttributes: ErrorAttributes, errorPropertie
                 info.info(except)
             }
         }
-        response.status = 200
+        response.status=200
         return ModelAndView("application")
     }
 

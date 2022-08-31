@@ -1,7 +1,7 @@
 package com.example.mirrors.util
 
 class CustomModel {
-    private val bundle = HtmlBundle()
+    private val bundle = CustomBundle()
 
 
     fun setLanguage(lang: String) {
@@ -12,14 +12,14 @@ class CustomModel {
         bundle.charset(charset)
     }
 
-    fun insertWithEntries(entries: Set<Map.Entry<Any, Any>>) {
+    fun insertWithEntries(entries: Set<Map.Entry<Any?, Any?>>) {
         for (entry in entries) {
             bundle.addBody(bundle.insertAsP(entry.key.toString()))
             bundle.addBody(bundle.insertAsP(entry.value.toString()))
         }
     }
 
-    fun getHtml(): String {
+    fun getHTML(): String {
         bundle.lang("zh-CN")
         bundle.charset("UTF-8")
         bundle.addHead("<title>Mirrors</title>")

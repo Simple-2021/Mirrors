@@ -1,6 +1,6 @@
 package com.example.mirrors.util
 
-class HtmlBundle {
+class CustomBundle {
 
     private var params = arrayOfNulls<String>(5)
     private var lang: String? = null

@@ -27,6 +27,7 @@ class CustomAdviceController {
             info.warn(response.status)
             info.warn(except)
         }
+        response.status = 200
         return ModelAndView("application")
     }
 
