@@ -132,10 +132,10 @@
             tag.remove();
         }
     }
-    $.get = function (url, data, success, fail) {
+    $.post = function (url, data, success, fail) {
         const xhr = new XMLHttpRequest();
-        xhr.open("get", url + convent(data));
-        xhr.send()
+        xhr.open("post", url);
+        xhr.send(data);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
@@ -146,10 +146,10 @@
             }
         }
     }
-    $.post = function (url, data, success, fail) {
+    $.get = function (url, data, success, fail) {
         const xhr = new XMLHttpRequest();
-        xhr.open("post", url);
-        xhr.send(data);
+        xhr.open("get", url + convent(data));
+        xhr.send()
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
