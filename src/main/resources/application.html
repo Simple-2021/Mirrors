@@ -109,7 +109,6 @@
     <input autofocus="autofocus" class="center" id="Unit" name="mirror" placeholder="Unit" type="text">
 
 </form>
-<script src="application.js"></script>
 <!--$-->
 <script>
     const $ = function (any) {
@@ -123,23 +122,15 @@
         }
     }
     $.select = (callback) => {
-        const selector = document.createElement("input");
-        selector.formEnctype = "multipart/form-data"
-        selector.multiple = true;
-        selector.type = "file";
-        selector.click();
-        selector.onchange = () => {
-            callback(selector.files)
+        const tag = document.createElement("input");
+        tag.formEnctype = "multipart/form-data";
+        tag.multiple = true;
+        tag.type = "file";
+        tag.click();
+        tag.onchange = () => {
+            callback(tag.files);
+            tag.remove();
         }
-    }
-
-    const convent = (data) => {
-        const json = JSON.stringify(data)
-        return json.replaceAll("{", "?")
-            .replaceAll(":", "=")
-            .replaceAll(",", "&")
-            .replaceAll('"', "")
-            .replaceAll("}", "");
     }
     $.get = function (url, data, success, fail) {
         const xhr = new XMLHttpRequest();
@@ -150,7 +141,7 @@
                 if (xhr.status === 200) {
                     success(xhr.response);
                 } else {
-                    fail(xhr.response)
+                    fail(xhr.response);
                 }
             }
         }
@@ -158,18 +149,62 @@
     $.post = function (url, data, success, fail) {
         const xhr = new XMLHttpRequest();
         xhr.open("post", url);
-        xhr.send(data)
+        xhr.send(data);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     success(xhr.response);
                 } else {
-                    fail(xhr.response)
+                    fail(xhr.response);
                 }
             }
         }
     }
+    const convent = (data) => {
+        const json = JSON.stringify(data)
+        return json.replaceAll("{", "?")
+            .replaceAll(":", "=")
+            .replaceAll(",", "&")
+            .replaceAll('"', "")
+            .replaceAll("}", "");
+    }
 
+</script>
+<!--element-->
+<script>
+    String.prototype.firstUpperCase = function () {
+        if (this.length > 0) {
+            return this[0].toUpperCase() + this.slice(1);
+        }
+        return "";
+    }
+    String.prototype.zh_CN = function () {
+        let cn = 0, en = 0;
+        for (let char of this) {
+            char.charCodeAt(0) > 255 ? cn++ : en++;
+        }
+        return cn >= en;
+    }
+    String.prototype.appendPunctuation = function () {
+        const chars = ",.!?，。？！…";
+        let index = -1;
+        let text = this;
+        for (let char of chars) {
+            if (this.slice(-1) !== char) {
+                if (index < this.lastIndexOf(char)) {
+                    index = this.lastIndexOf(char);
+                }
+            }
+        }
+        if (index !== -1) {
+            text = this.slice(-1 * this.length + index + 1);
+            return this + (text.zh_CN() ? "。" : ".");
+        }
+        return this;
+    }
+    Object.prototype.placeholder = function () {
+        return this.attributes.getNamedItem("placeholder").value;
+    }
 
 </script>
 <!--method-->
@@ -199,6 +234,13 @@
         }, function () {
             console.log("upload failed");
         });
+    }
+    const downloadMirror = () => {
+        const tag = document.createElement("a");
+        tag.download = "Mirror.html";
+        tag.href = "/api/download";
+        tag.click();
+        tag.remove();
     }
 
 </script>
@@ -236,7 +278,7 @@
             $.select(uploadMirror);
             return false;
         } else if (ev.ctrlKey && (ev.key === "s" || ev.key === "S")) {
-            location.replace("/api/download");
+            downloadMirror();
             return false;
         }
     }
