@@ -2,11 +2,11 @@ package com.example.mirrors.controller
 
 import com.example.mirrors.service.DownloadService
 import com.example.mirrors.service.UploadService
+import com.example.mirrors.util.CustomModel
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import java.net.URLEncoder
 import java.util.*
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletResponse
@@ -49,22 +49,20 @@ class AppDataController {
     @Resource(name = "downloadService")
     private lateinit var download: DownloadService
 
-    @Suppress("NAME_SHADOWING")
     @GetMapping("/api/download")
     fun download(file: String?, response: HttpServletResponse) {
-        response.contentType = "application/octet-stream"
-        response.setHeader(
-            "Content-Disposition",
-            "attachment;filename=" + (if (file != null) URLEncoder.encode(file, "utf-8")
-                .replace("+", "%20") else "Mirrors.html")
-        )
-        response.outputStream.write(
-            if (file.isNullOrEmpty())
-                download.target(mirrors.entries)
-            else
-                download.download(file)
-        )
-        response.flushBuffer()
+        if (file.isNullOrEmpty()) {
+            val m = CustomModel()
+            m.setLanguage("zh-CN")
+            m.setCharset("UTF-8")
+            m.insertWithEntries(mirrors.entries)
+            response.contentType = "application/octet-stream"
+            response.setHeader("Content-Disposition", "attachment;filename=" + "Mirrors.html")
+            response.outputStream.write(m.getHtml().toByteArray(Charsets.UTF_8))
+            response.flushBuffer()
+        } else {
+            download.download(file, response)
+        }
     }
 
 }

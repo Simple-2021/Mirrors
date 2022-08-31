@@ -1,12 +1,12 @@
 package com.example.mirrors.util
 
-class BundleUtils {
+class HtmlBundle {
 
     private var params = arrayOfNulls<String>(5)
     private var lang: String? = null
     private var charset: String? = null
 
-    override fun toString(): String {
+    fun bundle(): String {
         lang ?: lang()
         charset ?: charset()
         return html(head(params[0] + style(params[1])) + body(params[2] + script(params[3])))
@@ -73,10 +73,8 @@ class BundleUtils {
         params[3] += "\t\t" + any + "\n"
     }
 
-    fun inP(e: Map.Entry<Any, Any>): String {
-        val key = "<p>\n\t\t${e.key}\n\t</p>\n"
-        val value = "\t<p>\n\t\t${e.value}\n\t</p>"
-        return key + value
+    fun insertAsP(any: String): String {
+        return "<p>\n\t\t$any\n\t</p>"
     }
 
 }
