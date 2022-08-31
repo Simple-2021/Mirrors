@@ -210,11 +210,12 @@
         $.get("/api", (e) => {
             const title = "Mirrors".padEnd(8) + e;
             if (title !== document.title) {
-                if (index !== count) {
-                    count = e;
-                } else {
+                if (index === count || index === (count - 1)) {
                     index = count = e;
                     refreshMirror();
+                } else {
+                    count = e;
+                    document.title = title;
                 }
             }
         });
@@ -246,18 +247,17 @@
     }
     const sync = {
         dark: (mediaQueryList) => {
-            // noinspection JSBitwiseOperatorUsage
-            if (mediaQueryList | mediaQueryList.matches) {
+            if (mediaQueryList === true || mediaQueryList.matches) {
                 $("#favicon").href = "favicon.ico?dark=true";
             }
         },
         light: (mediaQueryList) => {
-            // noinspection JSBitwiseOperatorUsage
-            if (mediaQueryList | mediaQueryList.matches) {
+            if (mediaQueryList === true || mediaQueryList.matches) {
                 $("#favicon").href = "favicon.ico";
             }
         }
     }
+
 </script>
 <script>
     refresh();
