@@ -109,60 +109,65 @@
     <input autofocus="autofocus" class="center" id="Unit" name="mirror" placeholder="Unit" type="text">
 
 </form>
-<!--element-->
+<script src="application.js"></script>
+<!--$-->
 <script>
-    const unit = document.getElementById("Unit");
-    const frame = document.getElementById("frame");
-    const favicon = document.getElementById("favicon");
-    const placeholder = unit.attributes.getNamedItem("placeholder");
+    const $ = function (any) {
+        switch (any.charAt(0)) {
+            case "#":
+                return document.getElementById(any.slice(1));
+            case ".":
+                return document.getElementsByClassName(any.slice(1));
+            default:
+                return document.getElementsByTagName(any);
+        }
+    }
+    $.select = (callback) => {
+        const selector = document.createElement("input");
+        selector.formEnctype = "multipart/form-data"
+        selector.multiple = true;
+        selector.type = "file";
+        selector.click();
+        selector.onchange = () => {
+            callback(selector.files)
+        }
+    }
 
-    Window.prototype.dark = function (mediaQueryList) {
-        // noinspection JSBitwiseOperatorUsage
-        if (mediaQueryList | mediaQueryList.matches) {
-            favicon.href = "favicon.ico?dark=true";
-        }
+    const convent = (data) => {
+        const json = JSON.stringify(data)
+        return json.replaceAll("{", "?")
+            .replaceAll(":", "=")
+            .replaceAll(",", "&")
+            .replaceAll('"', "")
+            .replaceAll("}", "");
     }
-    Window.prototype.light = function (mediaQueryList) {
-        // noinspection JSBitwiseOperatorUsage
-        if (mediaQueryList | mediaQueryList.matches) {
-            favicon.href = "favicon.ico";
-        }
-    }
-    String.prototype.firstUpperCase = function () {
-        if (this.length > 0) {
-            return this[0].toUpperCase() + this.slice(1);
-        }
-        return "";
-    }
-    // noinspection JSUnusedGlobalSymbols
-    String.prototype.lastUpperCase = function () {
-        if (this.length > 0) {
-            const lastIndex = this.length - 1;
-            return this.slice(0, lastIndex) + this[lastIndex].toUpperCase();
-        }
-        return "";
-    }
-    String.prototype.zh_CN = function () {
-        let cn = 0, en = 0;
-        for (let char of this) {
-            char.charCodeAt(0) > 255 ? cn++ : en++;
-        }
-        return cn >= en;
-    }
-    String.prototype.appendPunctuation = function () {
-        const chars = ",.!?，。？！…";
-        let index = -1;
-        let text = this;
-        for (let char of chars) {
-            if (index < this.lastIndexOf(char)) {
-                index = this.lastIndexOf(char);
+    $.get = function (url, data, success, fail) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("get", url + convent(data));
+        xhr.send()
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    success(xhr.response);
+                } else {
+                    fail(xhr.response)
+                }
             }
         }
-        if (index !== -1) {
-            text = this.slice(-1 * this.length + index + 1);
-            return this + (text.zh_CN() ? "。" : ".");
+    }
+    $.post = function (url, data, success, fail) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("post", url);
+        xhr.send(data)
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    success(xhr.response);
+                } else {
+                    fail(xhr.response)
+                }
+            }
         }
-        return this;
     }
 
 
@@ -170,73 +175,30 @@
 <!--method-->
 <script>
     const refresh = function () {
-        const xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                const title = "Mirrors".padEnd(8) + xhr.responseText;
-                if (title !== document.title) {
-                    refreshMirror();
-                }
+        $.get("/api", {}, function (e) {
+            const title = "Mirrors".padEnd(8) + e;
+            if (title !== document.title) {
+                refreshMirror();
             }
-        }
-        xhr.open("get", "/api", true);
-        xhr.send();
+        });
     }
     const refreshMirror = function () {
-        const xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                const json = JSON.parse(xhr.responseText);
-                document.title = "Mirrors".padEnd(8) + json.count;
-                placeholder.value = json.mirror;
-            }
-        }
-        xhr.open("get", "/api/mirror", true);
-        xhr.send();
+        $.get("/api/mirror", {}, function (e) {
+            const json = JSON.parse(e);
+            document.title = "Mirrors".padEnd(8) + json.count;
+            $("#Unit").placeholder = json.mirror;
+        });
     }
-    const downloadMirror = () => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-            const blob = new Blob([xhr.response], {type: "application/octet-stream"});
-            const contentDisposition = xhr.getResponseHeader("Content-Disposition");
-            const a = document.createElement("a");
-            let fileName;
-            if (contentDisposition) {
-                const descArrays = contentDisposition.split("=");
-                fileName = decodeURI(descArrays[1]);
-            }
-            a.href = window.URL.createObjectURL(blob);
-            a.download = fileName;
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(a.href);
-        }
-        xhr.open("get", "/api/download");
-        xhr.send();
-    }
-    const uploadMirror = () => {
-        const xhr = new XMLHttpRequest();
+    const uploadMirror = function (files) {
         const form = new FormData();
-        const file = document.createElement("input");
-        file.formEnctype="multipart/form-data"
-        file.multiple = true;
-        file.type = "file";
-        file.click();
-        file.onchange = () => {
-            const fir = file.files.item(0);
-            form.append("file", fir);
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        console.log("upload succeed");
-                    } else {
-                        console.log("upload failed");
-                    }
-                }
-            }
-            xhr.open("post", "/api/upload");
-            xhr.send(form);
+        for (i of files) {
+            form.append("file", i);
         }
+        $.post("/api/upload", form, function () {
+            console.log("upload succeed");
+        }, function () {
+            console.log("upload failed");
+        });
     }
 
 </script>
@@ -244,47 +206,50 @@
 <script>
     refresh();
     // window.setInterval(refresh, 106);
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", window.dark);
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", window.light);
-
 </script>
 <!--event-->
 <script>
-    window.onload = function () {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            window.dark(true);
-        } else {
-            window.light(true);
-        }
-    }
-    window.onkeydown = function (ev) {
-        if (ev.ctrlKey && (ev.key === "o" || ev.key === "O")) {
-            uploadMirror();
-            return false;
-        } else if (ev.ctrlKey && (ev.key === "s" || ev.key === "S")) {
-            downloadMirror();
-            return false;
-        }
-    }
-    frame.onsubmit = function () {
-        const xhr = new XMLHttpRequest();
+    $("#frame").onsubmit = () => {
         const form = new FormData();
-        const data = unit.value.trim().firstUpperCase().appendPunctuation();
+        const data = $("#Unit").value
+            .trim()
+            .firstUpperCase()
+            .appendPunctuation();
         form.append("mirror", data);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    console.log("succeed");
-                    location.reload();
-                } else {
-                    console.log("failed");
-                }
-            }
-        }
-        xhr.open("post", "/", true);
-        xhr.send(form);
+        $.post("/", form, () => {
+            console.log("succeed");
+            location.reload();
+        }, () => {
+            console.log("failed");
+        });
         return false;
     }
+    window.onload = () => {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            $("#favicon").href = "favicon.ico?dark=true";
+        } else {
+            $("#favicon").href = "favicon.ico";
+        }
+    }
+    window.onkeydown = (ev) => {
+        if (ev.ctrlKey && (ev.key === "o" || ev.key === "O")) {
+            $.select(uploadMirror);
+            return false;
+        } else if (ev.ctrlKey && (ev.key === "s" || ev.key === "S")) {
+            location.replace("/api/download");
+            return false;
+        }
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", (mediaQueryList) => {
+        if (mediaQueryList.matches) {
+            $("#favicon").href = "favicon.ico?dark=true";
+        }
+    });
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", (mediaQueryList) => {
+        if (mediaQueryList.matches) {
+            $("#favicon").href = "favicon.ico";
+        }
+    });
 
 </script>
 
