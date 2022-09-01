@@ -6,55 +6,7 @@
     <!--suppress HtmlUnknownTarget -->
     <link href="favicon.ico" id="favicon" rel="shortcut icon" type="svg+xml"/>
     <title>Mirrors</title>
-    <!-- :root -->
-    <style>
-        :root {
-            --color: #111;
-            --background-color: #fff;
-            --border-color: #ccc;
-            --placeholder-color: #aaa;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --color: #eee;
-                --background-color: #111;
-                --border-color: #aaa;
-                --placeholder-color: #ccc;
-            }
-        }
-
-    </style>
-    <!-- :style -->
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            border: none;
-            outline: none;
-        }
-
-        body {
-            width: 100%;
-            position: absolute;
-            background-color: var(--background-color);
-        }
-
-        input::-webkit-input-placeholder {
-            color: var(--placeholder-color);
-        }
-
-    </style>
-    <!-- class:style -->
-    <style>
-        .center {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-    </style>
-    <!-- id:style -->
+    <link href="application.custom.css" id="css" rel="stylesheet" type="text/css">
     <style>
         #Unit {
             position: relative;
@@ -65,9 +17,6 @@
             background-color: var(--background-color);
         }
 
-    </style>
-    <!-- media:style -->
-    <style>
         @media screen and (max-width: 1920px) {
             #Unit {
                 padding: 0 18px;
@@ -101,7 +50,6 @@
         }
 
     </style>
-
 </head>
 <body class="center">
 <form autocomplete="off" id="frame" method="post">
@@ -112,16 +60,15 @@
 <script src="application.api.lib.js"></script>
 <script src="application.api.js"></script>
 <script src="application.api.lib.ui.js"></script>
+<!--main-->
 <script>
-    let index, count;
     refresh();
     window.setInterval(refresh, 106);
     window.matchMedia('(prefers-color-scheme: dark)') ? refreshMedia(true) : refreshMedia();
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", refreshMedia);
 
 </script>
-
-
+<!---->
 <script>
     $("#frame").onsubmit = () => {
         const form = new FormData();
@@ -151,6 +98,7 @@
             return false;
         }
     }
+    let index, count;
     window.onwheel = e => {
         // noinspection JSUnresolvedVariable
         const dy = e.deltaY || e.wheelDeltaY
@@ -170,7 +118,6 @@
             }
         }
     }
-
 
 </script>
 

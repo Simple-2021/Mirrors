@@ -1,0 +1,57 @@
+/*<!-- :root -->*/
+
+ :root {
+     --color: #111;
+     --background-color: #fff;
+     --border-color: #ccc;
+     --placeholder-color: #aaa;
+ }
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color: #eee;
+        --background-color: #111;
+        --border-color: #aaa;
+        --placeholder-color: #ccc;
+    }
+}
+
+
+/*<!-- :style -->*/
+
+ * {
+     margin: 0;
+     padding: 0;
+     border: none;
+     outline: none;
+ }
+
+body {
+    width: 100%;
+    position: absolute;
+    background-color: var(--background-color);
+}
+
+input::-webkit-input-placeholder {
+    color: var(--placeholder-color);
+}
+
+
+/*<!-- class:style -->*/
+
+ .center {
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+ }
+
+
+/*<!-- id:style -->*/
+
+
+
+
+/*<!-- media:style -->*/
+
+
+
