@@ -109,168 +109,18 @@
     <input autofocus="autofocus" class="center" id="Unit" name="mirror" placeholder="Unit" type="text">
 
 </form>
-<!--$-->
-<script>
-    const $ = (any) => {
-        switch (any.charAt(0)) {
-            case "#":
-                return document.getElementById(any.slice(1));
-            case ".":
-                return document.getElementsByClassName(any.slice(1));
-            default:
-                return document.getElementsByTagName(any);
-        }
-    }
-    $.select = (callback, isDirectory) => {
-        const tag = document.createElement("input");
-        tag.formEnctype = "multipart/form-data";
-        tag.type = "file";
-        if (isDirectory) {
-            tag.webkitdirectory = true;
-        }
-        tag.multiple = true;
-        tag.click();
-        tag.onchange = () => {
-            callback(tag.files);
-            tag.remove();
-        }
-    }
-    $.post = (url, data, success, fail) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("post", url);
-        xhr.send(data);
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    success(xhr.response);
-                } else {
-                    fail(xhr.response);
-                }
-            }
-        }
-    }
-    $.get = (url, success, fail) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("get", url);
-        xhr.send()
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    success(xhr.response);
-                } else {
-                    fail(xhr.response);
-                }
-            }
-        }
-    }
-
-</script>
-<!--element-->
+<script src="application.api.lib.js"></script>
+<script src="application.api.js"></script>
+<script src="application.api.lib.ui.js"></script>
 <script>
     let index, count;
-
-    Object.prototype.placeholder = function () {
-        return this.attributes.getNamedItem("placeholder").value;
-    }
-    String.prototype.firstUpperCase = function () {
-        if (this.length > 0) {
-            return this[0].toUpperCase() + this.slice(1);
-        }
-        return "";
-    }
-    String.prototype.zh_CN = function () {
-        let cn = 0, en = 0;
-        for (let char of this) {
-            char.charCodeAt(0) > 255 ? cn++ : en++;
-        }
-        return cn >= en;
-    }
-    String.prototype.appendPunctuation = function () {
-        const chars = ",.!?，。？！…";
-        let index = -1;
-        let text = this;
-        for (let char of chars) {
-            if (this.slice(-1) !== char) {
-                if (index < this.lastIndexOf(char)) {
-                    index = this.lastIndexOf(char);
-                }
-            }
-        }
-        if (index !== -1) {
-            text = this.slice(-1 * this.length + index + 1);
-            return this + (text.zh_CN() ? "。" : ".");
-        }
-        return this;
-    }
-
-</script>
-<!--method-->
-<script>
-    const refresh = () => {
-        $.get("/api", (e) => {
-            const title = "Mirrors".padEnd(8) + e;
-            if (title !== document.title) {
-                if (index === count || index === (count - 1)) {
-                    index = count = e;
-                    refreshMirror();
-                } else {
-                    count = e;
-                    document.title = title;
-                }
-            }
-        });
-    }
-    const refreshMirror = () => {
-        $.get("/api/mirror", (e) => {
-            const json = JSON.parse(e);
-            document.title = "Mirrors".padEnd(8) + json["K"];
-            $("#Unit").placeholder = json["V"];
-        });
-    }
-    const uploadMirror = (files) => {
-        const form = new FormData();
-        for (i of files) {
-            form.append("file", i);
-        }
-        $.post("/api/upload", form, () => {
-            alert("upload succeed");
-        }, () => {
-            alert("upload failed");
-        });
-    }
-    const downloadMirror = () => {
-        const tag = document.createElement("a");
-        tag.download = "Mirrors.html";
-        tag.href = "/api/download";
-        tag.click();
-        tag.remove();
-    }
-    const sync = {
-        dark: (mediaQueryList) => {
-            if (mediaQueryList === true || mediaQueryList.matches) {
-                $("#favicon").href = "favicon.ico?dark=true";
-            }
-        },
-        light: (mediaQueryList) => {
-            if (mediaQueryList === true || mediaQueryList.matches) {
-                $("#favicon").href = "favicon.ico";
-            }
-        }
-    }
-
-</script>
-<script>
     refresh();
     window.setInterval(refresh, 106);
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        sync.dark(true);
-    } else {
-        sync.light(true);
-    }
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", sync.dark);
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener("change", sync.light);
+    window.matchMedia('(prefers-color-scheme: dark)') ? refreshMedia(true) : refreshMedia();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener("change", refreshMedia);
 
 </script>
+
 
 <script>
     $("#frame").onsubmit = () => {
@@ -288,7 +138,7 @@
         });
         return false;
     }
-    window.onkeydown = (ev) => {
+    window.onkeydown = ev => {
         if (ev.ctrlKey && ev.key === ("o" || "O")) {
             if (confirm("确定要上传文件?")) {
                 $.select(uploadMirror);
@@ -301,25 +151,26 @@
             return false;
         }
     }
-    window.onwheel = function (e) {
+    window.onwheel = e => {
         // noinspection JSUnresolvedVariable
         const dy = e.deltaY || e.wheelDeltaY
         if (dy === (100 || -120)) {
             if (index - 1 > -1) {
                 index--
-                $.get("/api/mirror?index=" + index, (json) => {
+                $.get("/api/mirror?index=" + index, json => {
                     $("#Unit").placeholder = JSON.parse(json)["V"];
-                })
+                });
             }
         } else if (dy === (-100 || 120)) {
             if (index + 1 < count) {
                 index++
-                $.get("/api/mirror?index=" + index, (json) => {
+                $.get("/api/mirror?index=" + index, json => {
                     $("#Unit").placeholder = JSON.parse(json)["V"];
-                })
+                });
             }
         }
     }
+
 
 </script>
 
