@@ -1,13 +1,14 @@
 package com.example.mirrors.controller
 
 import com.example.mirrors.service.DownloadService
+import com.example.mirrors.service.MirrorService
 import com.example.mirrors.service.UploadService
-import com.google.gson.JsonObject
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import java.util.*
+import java.io.IOException
 import javax.annotation.Resource
 import javax.servlet.http.HttpServletResponse
 
@@ -15,68 +16,63 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 class AppDataController {
 
-    @Resource(name = "mirrors")
-    private lateinit var mirrors: JsonObject
+    @Autowired
+    private lateinit var mirrors: MirrorService
 
     @PostMapping("/")
-    fun postMirror(mirror: String) {
-        if (mirror.isNotEmpty()) {
-            synchronized(this) {
-                val json = JsonObject()
-                json.addProperty("K", "${Date()}")
-                json.addProperty("V", mirror)
-                val index = "" + mirrors.size()
-                mirrors.add(index, json)
-            }
-        }
+    fun postMirror(mirror: String): String {
+        return try {
+            mirrors.append(mirror)
+        } catch (e: IOException) {
+            false
+        }.toString()
     }
 
     @GetMapping("/api")
     fun getCount(): Int {
-        return mirrors.size()
+        return mirrors.getCount()
     }
 
     @GetMapping("/api/mirror")
-    fun getMirror(index: Int?): String? {
+    fun getMirror(i: Int?): String {
         return try {
-            val json = when {
-                index == null -> {
-                    mirrors["" + (mirrors.size() - 1)].asJsonObject
-                }
-                index < mirrors.size() -> {
-                    mirrors["" + index].asJsonObject
-                }
-                else -> {
-                    mirrors["" + (mirrors.size() - 1)].asJsonObject
-                }
-            }
-            json.addProperty("K", mirrors.size())
-            json.toString()
+            mirrors.get(i)
         } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+            try {
+                mirrors.getLast()
+            } catch (e: Exception) {
+                false
+            }
+        }.toString()
     }
 
     @Resource(name = "uploadService")
     private lateinit var upload: UploadService
 
     @PostMapping("/api/upload")
-    fun uploads(file: Array<MultipartFile>) {
-        upload.upload(file)
+    fun uploads(file: Array<MultipartFile>): String {
+        return try {
+            upload.upload(file)
+        } catch (e: Exception) {
+            false
+        }.toString()
     }
 
     @Resource(name = "downloadService")
     private lateinit var download: DownloadService
 
     @GetMapping("/api/download")
-    fun download(file: String?, response: HttpServletResponse) {
-        if (file.isNullOrEmpty()) {
-            response.writer.println(download.filesInfo())
-            response.flushBuffer()
-        } else {
-            download.download(file, response)
-        }
+    fun download(file: String?, response: HttpServletResponse): String {
+        return try {
+            if (file.isNullOrEmpty()) {
+                response.writer.println(download.filesInfo())
+                response.flushBuffer()
+            } else {
+                download.download(file, response)
+            }
+        } catch (e: Exception) {
+            false
+        }.toString()
     }
 
 }

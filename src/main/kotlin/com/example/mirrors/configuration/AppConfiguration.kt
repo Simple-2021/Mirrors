@@ -12,12 +12,7 @@ class AppConfiguration {
 
     @Bean(name = ["mirrors"])
     fun getMirrors(): JsonObject{
-        val jsonp=JsonObject()
-        val json=JsonObject()
-        json.addProperty("K","${Date()}")
-        json.addProperty("V","Unit")
-        jsonp.add("0",json)
-        return jsonp
+        return JsonObject()
     }
 
     @Bean(name = ["upload"])

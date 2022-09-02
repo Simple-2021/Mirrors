@@ -50,9 +50,7 @@ $.get = (url, success, fail) => {
         }
     }
 }
-
-
-
+//
 Object.prototype.placeholder = function () {
     return this.attributes.getNamedItem("placeholder").value;
 }
